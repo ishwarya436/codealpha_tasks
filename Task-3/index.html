@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7ef;
+    color: #263d2b;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #667568;
+    margin-bottom: 25px;
+}
+
+.filter-buttons {
+    margin-bottom: 30px;
+}
+
+.filter-buttons button {
+    padding: 12px 25px;
+    margin: 5px;
+    border: 1px solid #567b58;
+    background: white;
+    color: #345b38;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-buttons button:hover {
+    background: #477b4c;
+    color: white;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.image-card {
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
+    height: 250px;
+}
+
+.image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+}
+
+.image-card:hover img {
+    transform: scale(1.1);
+}
+
+/* Lightbox */
+
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.lightbox img {
+    max-width: 75%;
+    max-height: 80%;
+    border-radius: 12px;
+}
+
+.lightbox button {
+    position: absolute;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+.close {
+    top: 20px;
+    right: 35px;
+}
+
+.prev {
+    left: 30px;
+}
+
+.next {
+    right: 30px;
+}
+
+/* Responsive design */
+
+@media (max-width: 768px) {
+    .gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .image-card {
+        height: 220px;
+    }
+}
+</style>
+</head>
+<body>
+ <!DOCTYPE html>
+<html>
+<head>
+    <title>Image Gallery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>📸 Image Gallery</h1>
+        <p>Explore the beauty of nature 🌿</p>
+
+        <div class="filter-buttons">
+            <button onclick="filterImages('all')">All</button>
+            <button onclick="filterImages('nature')">Nature</button>
+            <button onclick="filterImages('flowers')">Flowers</button>
+            <button onclick="filterImages('beach')">Beach</button>
+        </div>
+
+        <div class="gallery" id="gallery">
+
+            <div class="image-card" data-category="nature">
+                <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+                     onclick="openLightbox(0)">
+            </div>
+
+            <div class="image-card" data-category="flowers">
+                <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946"
+                     onclick="openLightbox(1)">
+            </div>
+
+            <div class="image-card" data-category="nature">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
+                     onclick="openLightbox(2)">
+            </div>
+
+            <div class="image-card" data-category="beach">
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+                     onclick="openLightbox(3)">
+            </div>
+
+            <div class="image-card" data-category="nature">
+                <img src="https://images.unsplash.com/photo-1448375240586-882707db888b"
+                     onclick="openLightbox(4)">
+            </div>
+
+            <div class="image-card" data-category="flowers">
+                <img src="https://images.unsplash.com/photo-1494972308805-463bc619d34e"
+                     onclick="openLightbox(5)">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox">
+        <button class="close" onclick="closeLightbox()">×</button>
+        <button class="prev" onclick="changeImage(-1)">❮</button>
+        <img id="lightboxImage" src="" alt="Gallery Image">
+        <button class="next" onclick="changeImage(1)">❯</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+</body>
+</html>
