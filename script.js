@@ -1,317 +1,448 @@
 
 // Get HTML Elements
 
-const audioPlayer = document.getElementById("audioPlayer");
+const expressionDisplay = document.getElementById("expression");
 
-const songTitle = document.getElementById("songTitle");
+const resultDisplay = document.getElementById("result");
 
-const artistName = document.getElementById("artistName");
-
-const albumImage = document.getElementById("albumImage");
-
-const playPauseBtn = document.getElementById("playPauseBtn");
-
-const previousBtn = document.getElementById("previousBtn");
-
-const nextBtn = document.getElementById("nextBtn");
-
-const progressBar = document.getElementById("progressBar");
-
-const currentTime = document.getElementById("currentTime");
-
-const duration = document.getElementById("duration");
-
-const volumeControl = document.getElementById("volumeControl");
-
-const playlist = document.getElementById("playlist");
-
-const autoplayToggle = document.getElementById("autoplayToggle");
+const buttons = document.querySelector(".buttons");
 
 
-// Music Playlist
+// Store User Expression
 
-const songs = [
+let expression = "";
 
-    {
-        title: "Song One",
-        artist: "Unknown Artist",
-        src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-        image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=500"
-    },
 
-    {
-        title: "Song Two",
-        artist: "Unknown Artist",
-        src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-        image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500"
-    },
+// Update Calculator Display
 
-    {
-        title: "Song Three",
-        artist: "Unknown Artist",
-        src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-        image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500"
+function updateDisplay() {
+
+    expressionDisplay.textContent = expression || "0";
+
+    if (expression === "") {
+
+        resultDisplay.textContent = "0";
+
+        return;
+
     }
 
-];
+    try {
+
+        const answer = calculateExpression(expression);
+
+        resultDisplay.textContent = formatResult(answer);
+
+    } catch (error) {
+
+        resultDisplay.textContent =
+            error.message === "Division by zero"
+                ? "Cannot divide by zero"
+                : "—";
+
+    }
+
+}
 
 
-// Current Song Index
+// Format Result
 
-let currentSongIndex = 0;
+function formatResult(value) {
+
+    return String(Number(value.toPrecision(12)));
+
+}
 
 
-// Display Playlist
+// Calculate Mathematical Expression
 
-function displayPlaylist() {
+function calculateExpression(input) {
 
-    playlist.innerHTML = "";
+    let position = 0;
 
-    songs.forEach((song, index) => {
 
-        const li = document.createElement("li");
+    // Skip Spaces
 
-        li.innerHTML = `
-            <span>${index + 1}. ${song.title}</span>
-            <small>${song.artist}</small>
-        `;
+    function skipSpaces() {
 
-        if (index === currentSongIndex) {
-            li.classList.add("active");
+        while (input[position] === " ") {
+
+            position++;
+
         }
 
-        li.addEventListener("click", () => {
+    }
 
-            currentSongIndex = index;
 
-            loadSong(currentSongIndex);
+    // Read Number
 
-            playSong();
+    function readNumber() {
 
-        });
+        skipSpaces();
 
-        playlist.appendChild(li);
+        let start = position;
 
-    });
+        let decimalCount = 0;
+
+        while (
+            position < input.length &&
+            (
+                (input[position] >= "0" &&
+                 input[position] <= "9") ||
+                input[position] === "."
+            )
+        ) {
+
+            if (input[position] === ".") {
+
+                decimalCount++;
+
+                if (decimalCount > 1) {
+
+                    throw new Error("Invalid number");
+
+                }
+
+            }
+
+            position++;
+
+        }
+
+        const number = Number(input.slice(start, position));
+
+        if (start === position || !Number.isFinite(number)) {
+
+            throw new Error("Invalid expression");
+
+        }
+
+        return number;
+
+    }
+
+
+    // Handle Positive and Negative Numbers
+
+    function factor() {
+
+        skipSpaces();
+
+        if (input[position] === "+") {
+
+            position++;
+
+            return factor();
+
+        }
+
+        if (input[position] === "-") {
+
+            position++;
+
+            return -factor();
+
+        }
+
+        return readNumber();
+
+    }
+
+
+    // Multiplication and Division
+
+    function term() {
+
+        let value = factor();
+
+        while (true) {
+
+            skipSpaces();
+
+            const operator = input[position];
+
+            if (operator !== "*" && operator !== "/") {
+
+                break;
+
+            }
+
+            position++;
+
+            const nextValue = factor();
+
+            if (operator === "*") {
+
+                value *= nextValue;
+
+            } else {
+
+                if (nextValue === 0) {
+
+                    throw new Error("Division by zero");
+
+                }
+
+                value /= nextValue;
+
+            }
+
+        }
+
+        return value;
+
+    }
+
+
+    // Addition and Subtraction
+
+    function expressionValue() {
+
+        let value = term();
+
+        while (true) {
+
+            skipSpaces();
+
+            const operator = input[position];
+
+            if (operator !== "+" && operator !== "-") {
+
+                break;
+
+            }
+
+            position++;
+
+            const nextValue = term();
+
+            if (operator === "+") {
+
+                value += nextValue;
+
+            } else {
+
+                value -= nextValue;
+
+            }
+
+        }
+
+        return value;
+
+    }
+
+
+    const answer = expressionValue();
+
+    skipSpaces();
+
+    if (position !== input.length || !Number.isFinite(answer)) {
+
+        throw new Error("Invalid expression");
+
+    }
+
+    return answer;
 
 }
 
 
-// Load Song
+// Add Values to Expression
 
-function loadSong(index) {
+function addValue(value) {
 
-    const song = songs[index];
+    const lastCharacter = expression.slice(-1);
 
-    songTitle.textContent = song.title;
-
-    artistName.textContent = song.artist;
-
-    albumImage.src = song.image;
-
-    audioPlayer.src = song.src;
-
-    audioPlayer.load();
-
-    progressBar.value = 0;
-
-    currentTime.textContent = "0:00";
-
-    duration.textContent = "0:00";
-
-    displayPlaylist();
-
-}
+    const operators = ["+", "-", "*", "/"];
 
 
-// Play Song
+    if (operators.includes(value)) {
 
-function playSong() {
+        if (expression === "") {
 
-    audioPlayer.play()
-        .then(() => {
+            if (value === "-") {
 
-            playPauseBtn.textContent = "⏸";
+                expression = "-";
 
-        })
-        .catch((error) => {
+            } else {
 
-            console.error("Unable to play audio:", error);
+                return;
 
-            playPauseBtn.textContent = "▶";
+            }
 
-        });
+        } else if (operators.includes(lastCharacter)) {
 
-}
+            if (value === "-" && lastCharacter !== "-") {
 
+                expression += value;
 
-// Pause Song
+            } else if (expression.length > 1) {
 
-function pauseSong() {
+                expression = expression.slice(0, -1) + value;
 
-    audioPlayer.pause();
+            }
 
-    playPauseBtn.textContent = "▶";
+        } else {
 
-}
+            expression += value;
 
+        }
 
-// Play and Pause Button
+    } else if (value === ".") {
 
-playPauseBtn.addEventListener("click", () => {
+        const currentNumber = expression.split(/[+\-*/]/).pop();
 
-    if (audioPlayer.paused) {
+        if (currentNumber.includes(".")) {
 
-        playSong();
+            return;
+
+        }
+
+        if (currentNumber === "") {
+
+            expression += "0.";
+
+        } else {
+
+            expression += ".";
+
+        }
 
     } else {
 
-        pauseSong();
+        expression += value;
 
     }
 
-});
-
-
-// Next Song
-
-function nextSong() {
-
-    currentSongIndex++;
-
-    if (currentSongIndex >= songs.length) {
-
-        currentSongIndex = 0;
-
-    }
-
-    loadSong(currentSongIndex);
-
-    playSong();
+    updateDisplay();
 
 }
 
 
-// Previous Song
+// Clear Calculator
 
-function previousSong() {
+function clearCalculator() {
 
-    currentSongIndex--;
+    expression = "";
 
-    if (currentSongIndex < 0) {
-
-        currentSongIndex = songs.length - 1;
-
-    }
-
-    loadSong(currentSongIndex);
-
-    playSong();
+    updateDisplay();
 
 }
 
 
-// Next Button
+// Delete Last Character
 
-nextBtn.addEventListener("click", nextSong);
+function deleteLast() {
 
+    expression = expression.slice(0, -1);
 
-// Previous Button
-
-previousBtn.addEventListener("click", previousSong);
-
-
-// Format Time
-
-function formatTime(time) {
-
-    if (!Number.isFinite(time)) {
-        return "0:00";
-    }
-
-    const minutes = Math.floor(time / 60);
-
-    const seconds = Math.floor(time % 60);
-
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    updateDisplay();
 
 }
 
 
-// Update Duration
+// Calculate Final Result
 
-audioPlayer.addEventListener("loadedmetadata", () => {
+function calculateResult() {
 
-    duration.textContent = formatTime(audioPlayer.duration);
+    if (expression === "") {
 
-});
+        return;
+
+    }
+
+    try {
+
+        const answer = calculateExpression(expression);
+
+        expression = formatResult(answer);
+
+        updateDisplay();
+
+    } catch (error) {
+
+        resultDisplay.textContent =
+            error.message === "Division by zero"
+                ? "Cannot divide by zero"
+                : "Invalid Expression";
+
+    }
+
+}
 
 
-// Update Progress Bar
+// Handle Button Clicks
 
-audioPlayer.addEventListener("timeupdate", () => {
+buttons.addEventListener("click", (event) => {
 
-    if (audioPlayer.duration) {
+    const button = event.target.closest("button");
 
-        const progress =
-            (audioPlayer.currentTime / audioPlayer.duration) * 100;
+    if (!button) {
 
-        progressBar.value = progress;
+        return;
 
-        currentTime.textContent =
-            formatTime(audioPlayer.currentTime);
+    }
+
+    const value = button.dataset.value;
+
+    const action = button.dataset.action;
+
+
+    if (action === "clear") {
+
+        clearCalculator();
+
+    } else if (action === "delete") {
+
+        deleteLast();
+
+    } else if (action === "calculate") {
+
+        calculateResult();
+
+    } else if (value !== undefined) {
+
+        addValue(value);
 
     }
 
 });
 
 
-// Seek Music
+// Keyboard Support
 
-progressBar.addEventListener("input", () => {
+document.addEventListener("keydown", (event) => {
 
-    if (Number.isFinite(audioPlayer.duration)) {
+    const key = event.key;
 
-        audioPlayer.currentTime =
-            (progressBar.value / 100) * audioPlayer.duration;
+    if (/^[0-9]$/.test(key)) {
 
-    }
+        addValue(key);
 
-});
+    } else if (["+", "-", "*", "/", "."].includes(key)) {
 
+        addValue(key);
 
-// Volume Control
+    } else if (key === "Enter" || key === "=") {
 
-volumeControl.addEventListener("input", () => {
+        event.preventDefault();
 
-    audioPlayer.volume = volumeControl.value;
+        calculateResult();
 
-});
+    } else if (key === "Backspace") {
 
+        deleteLast();
 
-// Autoplay Next Song
+    } else if (key === "Escape") {
 
-audioPlayer.addEventListener("ended", () => {
-
-    if (autoplayToggle.checked) {
-
-        nextSong();
-
-    } else {
-
-        playPauseBtn.textContent = "▶";
-
-        progressBar.value = 0;
-
-        currentTime.textContent = "0:00";
+        clearCalculator();
 
     }
 
 });
 
 
-// Initialize Music Player
+// Initial Display
 
-audioPlayer.volume = volumeControl.value;
-
-loadSong(currentSongIndex);
+updateDisplay();

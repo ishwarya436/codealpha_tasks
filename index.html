@@ -1,117 +1,107 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Music Player</title>
+    <title>Smart Calculator</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <div class="music-container">
+    <div class="calculator-container">
 
+        <!-- Header -->
         <header>
-            <h1>♫ Music Player</h1>
-            <p>Your music, your mood</p>
+            <h1>Smart Calculator</h1>
+            <p>Calculate everything easily</p>
         </header>
 
-        <!-- Music Player -->
-        <div class="player-card">
+        <!-- Calculator -->
+        <div class="calculator">
 
-            <div class="album-container">
-                <img
-                    src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=500"
-                    id="albumImage"
-                    alt="Album Cover"
-                >
-            </div>
+            <!-- Display Screen -->
+            <div class="display">
 
-            <div class="song-details">
-                <h2 id="songTitle">Song Title</h2>
-                <p id="artistName">Artist Name</p>
-            </div>
+                <div id="expression" class="expression">
+                    0
+                </div>
 
-            <!-- Audio Element -->
-            <audio id="audioPlayer"></audio>
+                <div class="result-label">
+                    Result
+                </div>
 
-            <!-- Progress Bar -->
-            <div class="progress-container">
-
-                <span id="currentTime">0:00</span>
-
-                <input
-                    type="range"
-                    id="progressBar"
-                    value="0"
-                    min="0"
-                    max="100"
-                >
-
-                <span id="duration">0:00</span>
+                <div id="result" class="result">
+                    0
+                </div>
 
             </div>
 
-            <!-- Music Controls -->
-            <div class="controls">
+            <!-- Calculator Buttons -->
+            <div class="buttons">
 
-                <button id="previousBtn" title="Previous">
-                    ⏮
+                <button class="clear" data-action="clear">
+                    AC
                 </button>
 
-                <button id="playPauseBtn" class="play-btn" title="Play">
-                    ▶
+                <button class="delete" data-action="delete">
+                    DEL
                 </button>
 
-                <button id="nextBtn" title="Next">
-                    ⏭
+                <button class="operator" data-value="/">
+                    ÷
                 </button>
 
-            </div>
+                <button class="operator" data-value="*">
+                    ×
+                </button>
 
-            <!-- Volume Control -->
-            <div class="volume-container">
+                <button data-value="7">7</button>
+                <button data-value="8">8</button>
+                <button data-value="9">9</button>
 
-                <label for="volumeControl">🔊 Volume</label>
+                <button class="operator" data-value="-">
+                    -
+                </button>
 
-                <input
-                    type="range"
-                    id="volumeControl"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value="0.7"
-                >
+                <button data-value="4">4</button>
+                <button data-value="5">5</button>
+                <button data-value="6">6</button>
 
-            </div>
+                <button class="operator" data-value="+">
+                    +
+                </button>
 
-            <!-- Autoplay -->
-            <div class="autoplay-container">
+                <button data-value="1">1</button>
+                <button data-value="2">2</button>
+                <button data-value="3">3</button>
 
-                <input type="checkbox" id="autoplayToggle">
+                <button class="equal" data-action="calculate">
+                    =
+                </button>
 
-                <label for="autoplayToggle">
-                    Autoplay next song
-                </label>
+                <button data-value="0" class="zero">
+                    0
+                </button>
+
+                <button data-value=".">.</button>
 
             </div>
 
         </div>
 
-        <!-- Playlist -->
-        <div class="playlist-container">
-
-            <h2>My Playlist</h2>
-
-            <ul id="playlist"></ul>
-
-        </div>
+        <p class="footer">
+            Designed with HTML, CSS & JavaScript
+        </p>
 
     </div>
 
     <script src="script.js"></script>
 
 </body>
+
 </html>
